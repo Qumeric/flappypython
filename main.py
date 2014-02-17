@@ -13,6 +13,8 @@ background = image.load('background.png')
 
 screen.blit(background, (0, 0))
 
+myfont = font.SysFont("DejaVu Sans", 18)
+
 class GameObject:
     def __init__(self, img, x, y, speedX, speedY):
         self.img = img
@@ -28,6 +30,7 @@ pypic = image.load('python.png')
 python = GameObject(pypic, 5, 240, 0, 5)    # FIXME
 
 timer = 0
+highscore = 0
 pipes = []
 
 while True:
@@ -35,17 +38,30 @@ while True:
     sleep(0.03)
     if timer%100==0:
         pipepic = image.load('pipe.png')
-        pipe = GameObject(pipepic, 100, randrange(0, 240), -5, 0)
+        pipe = GameObject(pipepic, 240, randrange(0, 240), -5, 0)
         pipes.append(pipe)
-        if pipes[0].x <= 0:
+        if len(pipes) >= 5:
             pipes.pop(0)
+
     screen.blit(background, (0, 0));
     python.fly(0, 1)
     for i in event.get():
-        python.fly(0, -20)
+        if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
+            python.fly(0, -20)
     screen.blit(python.img, python.pos)
     for i in pipes:
         screen.blit(i.img, i.pos)
         i.fly(-3, 0)
+        if i.pos.colliderect(python.pos):
+            print("Collide!")
+            highscore = timer
+            timer = 0
+            pipes = []
+
+    hslabel = myfont.render(str(highscore), 1, (0, 255, 0))
+    screen.blit(hslabel, (100, 70))
+    label = myfont.render(str(timer), 1, (0, 0, 255))
+    screen.blit(label, (100, 100))
+    # DEBUG: print(pipes)
 
     display.flip()
