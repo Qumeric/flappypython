@@ -52,7 +52,7 @@ while True:
     for i in pipes:
         screen.blit(i.img, i.pos)
         i.fly(-3, 0)
-        if i.pos.colliderect(python.pos):
+        if i.pos.colliderect(python.pos) or python.y <= 0 :
             print("Collide!")
             highscore = timer
             timer = 0
