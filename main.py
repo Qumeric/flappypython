@@ -47,12 +47,17 @@ def action():
         pipes.clear()
         python.pos.y = 150;
 
+    def checkFall():
+        pheight = python.img.get_height()
+        if python.pos.y >= 360 - pheight*2:
+            endGame('Fail!')
+        elif python.pos.y <= 0 + pheight:
+            python.pos.y = 0 + pheight;
+
     while True:
         sleep(0.1)
         draw_background()
-        pipepic = load_image('pipe.png')
-        pipe = GameObject(pipepic, 240, randrange(0, 240), -5, 0)
-        pipes.append(pipe)
+        pipes.new()
 
         python.fly(0, 1)
 
@@ -61,16 +66,11 @@ def action():
         screen.blit(python.img, python.pos)
         
         pipes.draw()
+
         if pipes.checkCollisions(python):
             pipes.clear()
             endGame('Collision')
 
-        pheight = python.img.get_height()
-        if python.pos.y >= 360 - pheight*2:
-            endGame('Fail!')
-        elif python.pos.y <= 0 + pheight:
-            python.pos.y = 0 + pheight;
-            
         display.flip()
 
 # Self-descriptive
