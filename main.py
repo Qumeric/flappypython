@@ -32,7 +32,9 @@ def draw_background():
 # Main game cycle
 def action():
     myfont = pygame.font.SysFont("DejaVu Sans", 15)
+    global timer
     global grav
+    global highscore
     timer=0
     grav=0
     pypic = load_image('python.png')
@@ -40,6 +42,7 @@ def action():
     pipes = PipesController() 
     screen = pygame.display.get_surface()
     holesize = 50
+    highscore = 0
 
     # Handle input and other events
     def eventer(obj):
@@ -55,12 +58,17 @@ def action():
     def endGame(message):
         global timer
         global grav
+        global highscore
+        global holesize
         print(message)
         pipes.clear()
         python.pos.y = 150;
         holesize = 50
         grav = 0
         timer = 0
+
+        if timer > highscore:
+            highscore = timer
 
     def checkFall():
         pheight = python.img.get_height()
@@ -70,12 +78,14 @@ def action():
             python.pos.y = 0 + pheight;
 
     while True:
-        label = myfont.render(str(timer), 1, (255,255,0))
+        lScore = myfont.render(str(timer), 1, (255,255,0))
+        lHighscore = myfont.render(str(highscore), 1, (255, 0, 0))
 
         sleep(0.05)
         timer+=1
 
         draw_background()
+        pipes.draw()
         if timer%60==0:
             pipes.new(holesize)
             holesize -= 1
@@ -89,7 +99,6 @@ def action():
 
         screen.blit(python.img, python.pos)
         
-        pipes.draw()
 
         if pipes.checkCollisions(python):
             pipes.clear()
@@ -97,7 +106,8 @@ def action():
 
         checkFall()
 
-        screen.blit(label, (100, 100))
+        screen.blit(lScore, (100, 100))
+        screen.blit(lHighscore, (100, 120))
 
         display.flip()
 
