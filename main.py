@@ -45,9 +45,12 @@ def action():
     def eventer(obj):
         global grav
         for i in event.get():
-            if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
+            if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN and i.key != K_ESCAPE:
                 obj.fly(0, -20)
                 grav=0
+            elif i.type == QUIT or (i.type == KEYDOWN and i.key == K_ESCAPE):
+                pygame.quit()
+                raise SystemExit
 
     def endGame(message):
         global timer
