@@ -31,6 +31,7 @@ def draw_background():
 
 # Main game cycle
 def action():
+    myfont = pygame.font.SysFont("DejaVu Sans", 15)
     global grav
     timer=0
     grav=0
@@ -45,23 +46,29 @@ def action():
         global grav
         for i in event.get():
             if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
-                obj.fly(0, -40)
+                obj.fly(0, -20)
                 grav=0
 
     def endGame(message):
+        global timer
+        global grav
         print(message)
         pipes.clear()
         python.pos.y = 150;
+        holesize = 50
+        grav = 0
+        timer = 0
 
     def checkFall():
         pheight = python.img.get_height()
-        if python.pos.y >= 360 - pheight*2:
+        if python.pos.y >= 480 - pheight*2:
             endGame('Fail!')
-            grav=0
         elif python.pos.y <= 0 + pheight:
             python.pos.y = 0 + pheight;
+
     while True:
-        
+        label = myfont.render(str(timer), 1, (255,255,0))
+
         sleep(0.05)
         timer+=1
 
@@ -86,6 +93,8 @@ def action():
             endGame('Collision')
 
         checkFall()
+
+        screen.blit(label, (100, 100))
 
         display.flip()
 
