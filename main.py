@@ -1,7 +1,7 @@
 from pygame import *
 from time import sleep
 from random import randrange
-import sys
+from GameObject import GameObject
 
 init()
 
@@ -15,19 +15,7 @@ screen.blit(background, (0, 0))
 
 myfont = font.SysFont("DejaVu Sans", 18)
 
-class GameObject:
-    def __init__(self, img, x, y, speedX, speedY):
-        self.img = img
-        self.x = x
-        self.y = y
-        self.speedX = speedX
-        self.speedY = speedY
-        self.pos = img.get_rect().move(x, y)
-    def fly(self, sX, sY):
-        self.pos = self.pos.move(sX, sY)
-
-
-pypic = image.load('FlapBird.png')
+pypic = image.load('python.png')
 python = GameObject(pypic, 5, 150, 0, 5)    # FIXME
 
 timer = 0
@@ -79,4 +67,3 @@ while True:
     # DEBUG: print(pipes)
 
     display.flip()
-
