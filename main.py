@@ -1,69 +1,82 @@
+import pygame
 from pygame import *
 from time import sleep
 from random import randrange
-from GameObject import GameObject
+from GameObject import *
+from PipesController import *
 
-init()
+# Initialize environment
+def init_window():
+    pygame.init()
+    window = display.set_mode((480, 320))
+    display.set_caption('Flappy python')
 
-screen = display.set_mode((480, 320))
+# Macros for pygame.image.load(name)
+def load_image(name):
+    try:
+        image = pygame.image.load(name).convert_alpha()
+    except pygame.error:
+        print('Cannot load image:', name)
+        raise SystemExit
+    return image
 
-display.set_caption('Flappy python')
+# Draw background :)
+def draw_background():
+    screen = pygame.display.get_surface()
+    background = load_image('background.png')
+    background_rect  = background.get_rect()
+    screen.blit(background, (0, 0))
+    pygame.display.flip()
+    return background
 
-background = image.load('background.png')
+# Main game cycle
+def action():
+    pypic = load_image('python.png')
+    python = GameObject(pypic, 5, 150, 0, 5)
+    pipes = PipesController() 
+    screen = pygame.display.get_surface()
 
-screen.blit(background, (0, 0))
+    # Handle input and other events
+    def eventer(obj):
+        for i in event.get():
+            if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
+                obj.fly(0, -20)
 
-myfont = font.SysFont("DejaVu Sans", 18)
-
-pypic = image.load('python.png')
-python = GameObject(pypic, 5, 150, 0, 5)    # FIXME
-
-timer = 0
-highscore = 0
-pipes = []
-
-def endGame(message):
+    def endGame(message):
         print(message)
-        global highscore, timer, pipes
-        if highscore >= timer:
-            highscore = timer
-        timer = 0
-        pipes = []
+        pipes.clear()
         python.pos.y = 150;
 
-while True:
-    timer += 1
-    sleep(0.02)
-    if timer%90==0:
-        pipepic = image.load('pipe.png')
+    while True:
+        sleep(0.1)
+        draw_background()
+        pipepic = load_image('pipe.png')
         pipe = GameObject(pipepic, 240, randrange(0, 240), -5, 0)
         pipes.append(pipe)
-        if len(pipes) >= 5:
-            pipes.pop(0)
 
-    screen.blit(background, (0, 0));
-    python.fly(0, 1)
-    for i in event.get():
-        if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
-            python.fly(0, -20)
-    screen.blit(python.img, python.pos)
-    for i in pipes:
-        screen.blit(i.img, i.pos)
-        i.fly(-3, 0)
-        if i.pos.colliderect(python.pos):
-            endGame("Collide!")
+        python.fly(0, 1)
 
-    pheight = python.img.get_height()
-    if python.pos.y >= 360 - pheight*2:
-        endGame('Fail!')
-    elif python.pos.y <= 0 + pheight:
-        python.pos.y = 0 + pheight;
+        eventer(python)
+
+        screen.blit(python.img, python.pos)
         
+        pipes.draw()
+        if pipes.checkCollisions(python):
+            pipes.clear()
+            endGame('Collision')
 
-    hslabel = myfont.render(str(highscore), 1, (0, 255, 0))
-    screen.blit(hslabel, (100, 70))
-    label = myfont.render(str(timer), 1, (0, 0, 255))
-    screen.blit(label, (100, 100))
-    # DEBUG: print(pipes)
+        pheight = python.img.get_height()
+        if python.pos.y >= 360 - pheight*2:
+            endGame('Fail!')
+        elif python.pos.y <= 0 + pheight:
+            python.pos.y = 0 + pheight;
+            
+        display.flip()
 
-    display.flip()
+# Self-descriptive
+def main():
+    init_window()
+    draw_background()
+    action()
+
+if __name__ == '__main__': main()
