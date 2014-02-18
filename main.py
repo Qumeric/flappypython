@@ -27,7 +27,7 @@ class GameObject:
         self.pos = self.pos.move(sX, sY)
 
 
-pypic = image.load('python.png')
+pypic = image.load('FlapBird.png')
 python = GameObject(pypic, 5, 150, 0, 5)    # FIXME
 
 timer = 0
