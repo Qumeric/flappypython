@@ -9,10 +9,14 @@ class PipesController():
     def clear(self):
         del self.pipes[:]
     
-    def new(self):
+    def new(self, size):
+        hole = randrange(size*2, 480 - size*2)
         pipepic = pygame.image.load('pipe.png').convert_alpha()
-        pipe = GameObject(pipepic, 240, randrange(0, 240), -5, 0)
-        self.pipes.append(pipe)
+        pipe1 = GameObject(pipepic, 240, hole+size, -5, 0)
+        pipe2 = GameObject(pipepic, 240, -480+hole-size, -5, 0)
+        self.pipes.append(pipe1)
+        self.pipes.append(pipe2)
+
 
     def draw(self):
         screen = pygame.display.get_surface()
