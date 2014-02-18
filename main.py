@@ -42,6 +42,7 @@ def action():
 
     # Handle input and other events
     def eventer(obj):
+        global grav
         for i in event.get():
             if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
                 obj.fly(0, -40)
