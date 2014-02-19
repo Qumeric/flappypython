@@ -5,6 +5,21 @@ from random import randrange
 from GameObject import *
 from PipesController import *
 
+class GameState:
+    def __init__(self):
+        self.holesize = 50
+        self.grav = 0
+        self.timer = 0
+        self.highscore = 0
+    def new(self):
+        if self.timer > self.highscore:
+            self.highscore = self.timer
+        self.holesize = 50
+        self.grav = 0
+        self.timer = 0
+
+game = GameState()
+
 # Initialize environment
 def init_window():
     pygame.init()
@@ -32,43 +47,28 @@ def draw_background():
 # Main game cycle
 def action():
     myfont = pygame.font.SysFont("DejaVu Sans", 15)
-    global timer
-    global grav
-    global highscore
-    timer=0
-    grav=0
     pypic = load_image('python.png')
     python = GameObject(pypic, 5, 150, 0, 5)
     pipes = PipesController() 
     screen = pygame.display.get_surface()
-    holesize = 50
-    highscore = 0
+
+    game.new()
 
     # Handle input and other events
     def eventer(obj):
-        global grav
         for i in event.get():
             if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN and i.key != K_ESCAPE:
                 obj.fly(0, -20)
-                grav=0
+                game.grav=0
             elif i.type == QUIT or (i.type == KEYDOWN and i.key == K_ESCAPE):
                 pygame.quit()
                 raise SystemExit
 
     def endGame(message):
-        global timer
-        global grav
-        global highscore
-        global holesize
         print(message)
         pipes.clear()
         python.pos.y = 150;
-        holesize = 50
-        grav = 0
-        timer = 0
-
-        if timer > highscore:
-            highscore = timer
+        game.new()
 
     def checkFall():
         pheight = python.img.get_height()
@@ -78,21 +78,21 @@ def action():
             python.pos.y = 0 + pheight;
 
     while True:
-        lScore = myfont.render(str(timer), 1, (255,255,0))
-        lHighscore = myfont.render(str(highscore), 1, (255, 0, 0))
+        lScore = myfont.render(str(game.timer), 1, (255,255,0))
+        lHighscore = myfont.render(str(game.highscore), 1, (255, 0, 0))
 
         sleep(0.05)
-        timer+=1
+        game.timer+=1
 
         draw_background()
         pipes.draw()
-        if timer%60==0:
-            pipes.new(holesize)
-            holesize -= 1
+        if game.timer%60==0:
+            pipes.new(game.holesize)
+            game.holesize -= 1
 
 
-        python.fly(0, grav)
-        grav+=0.2
+        python.fly(0, game.grav)
+        game.grav+=0.2
         
 
         eventer(python)
