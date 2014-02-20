@@ -54,7 +54,7 @@ def eventer(obj):
 
 # Main game cycle
 def action():
-    myfont = pygame.font.SysFont("DejaVu Sans", 15)
+    myfont = pygame.font.Font("freesansbold.ttf", 15)
     pypic = load_image('python.png')
     python = GameObject(pypic, 5, 150, gravity=1)
     pipes = PipesController() 
@@ -72,10 +72,10 @@ def action():
 
     def checkFall():
         pheight = python.img.get_height()
-        if python.pos.y >= 480 - pheight*2:
+        if python.pos.y >= 480 - pheight*1.5:
             endGame('Fail!')
-        elif python.pos.y <= 0 + pheight:
-            python.pos.y = 0 + pheight;
+        elif python.pos.y <= pheight/2:
+            python.pos.y = pheight/2;
 
     while True:
         lScore = myfont.render(str(game.timer), 1, (255,255,0))
