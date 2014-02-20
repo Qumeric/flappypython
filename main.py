@@ -90,6 +90,7 @@ def action():
             endGame('Fail!')
         elif python.pos.y <= pheight/2:
             python.pos.y = pheight/2;
+            python.speedY = 1
 
     while True:
         lScore = myfont.render(str(game.timer), 1, (255,255,0))
