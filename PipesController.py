@@ -21,7 +21,7 @@ class PipesController():
     def draw(self):
         screen = pygame.display.get_surface()
         for pipe in self.pipes:
-            pipe.fly(-3, 0)
+            pipe.fly()
             screen.blit(pipe.img, pipe.pos)
 
     def getpipes(self):

@@ -8,14 +8,12 @@ from PipesController import *
 class GameState:
     def __init__(self):
         self.holesize = 50
-        self.grav = 0
         self.timer = 0
         self.highscore = 0
     def new(self):
         if self.timer > self.highscore:
             self.highscore = self.timer
         self.holesize = 50
-        self.grav = 0
         self.timer = 0
 
 game = GameState()
@@ -44,25 +42,25 @@ def draw_background():
     pygame.display.flip()
     return background
 
+# Handle input and other events
+def eventer(obj):
+    for i in event.get():
+        if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN and i.key != K_ESCAPE:
+            obj.speedY=-10
+            game.grav=0
+        elif i.type == QUIT or (i.type == KEYDOWN and i.key == K_ESCAPE):
+            pygame.quit()
+            raise SystemExit
+
 # Main game cycle
 def action():
     myfont = pygame.font.SysFont("DejaVu Sans", 15)
     pypic = load_image('python.png')
-    python = GameObject(pypic, 5, 150, 0, 5)
+    python = GameObject(pypic, 5, 150, gravity=1)
     pipes = PipesController() 
     screen = pygame.display.get_surface()
 
     game.new()
-
-    # Handle input and other events
-    def eventer(obj):
-        for i in event.get():
-            if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN and i.key != K_ESCAPE:
-                obj.fly(0, -20)
-                game.grav=0
-            elif i.type == QUIT or (i.type == KEYDOWN and i.key == K_ESCAPE):
-                pygame.quit()
-                raise SystemExit
 
     def endGame(message):
         print(message)
@@ -91,9 +89,7 @@ def action():
             game.holesize -= 1
 
 
-        python.fly(0, game.grav)
-        game.grav+=0.2
-        
+        python.fly()
 
         eventer(python)
 
