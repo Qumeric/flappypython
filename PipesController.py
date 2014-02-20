@@ -21,7 +21,7 @@ class PipesController():
         print(self.pipes)
         screen = pygame.display.get_surface()
         for pipe in self.pipes:
-            if pipe.pos.x <= 0:
+            if pipe.pos.x <= -pipe.img.get_width():
                 self.pipes.remove(pipe)
             else:
                 pipe.fly()
