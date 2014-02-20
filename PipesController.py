@@ -18,7 +18,6 @@ class PipesController():
         self.pipes.append(pipe2)
 
     def draw(self):
-        print(self.pipes)
         screen = pygame.display.get_surface()
         for pipe in self.pipes:
             if pipe.pos.x <= -pipe.img.get_width():

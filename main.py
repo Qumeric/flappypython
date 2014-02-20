@@ -13,6 +13,21 @@ class GameState:
     def new(self):
         if self.timer > self.highscore:
             self.highscore = self.timer
+        try:
+            with open('save', 'r+') as f:
+                save = f.read()
+                if self.highscore > int(save):
+                    f.seek(0)
+                    f.truncate()
+                    f.write(str(self.highscore))
+                else:
+                    self.highscore = int(save)
+        except:
+            print('Save must be corrupted. Set highscore to 0 :(')
+            f = open('save', 'w')
+            f.write('0')
+            f.close()
+
         self.holesize = 50
         self.timer = 0
 
@@ -67,7 +82,6 @@ def action():
         print(message)
         pipes.clear()
         python.die()
-
         game.new()
 
     def checkFall():

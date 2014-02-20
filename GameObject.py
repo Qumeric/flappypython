@@ -1,5 +1,8 @@
-class GameObject:
+import pygame
+
+class GameObject(pygame.sprite.Sprite):
     def __init__(self, img, x, y, speedX=0, speedY=0, gravity=0, maxspeed=15):
+        pygame.sprite.Sprite.__init__(self)
         self.img = img
         self.oldX = x
         self.oldY = y
