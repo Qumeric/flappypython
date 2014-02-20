@@ -17,12 +17,15 @@ class PipesController():
         self.pipes.append(pipe1)
         self.pipes.append(pipe2)
 
-
     def draw(self):
+        print(self.pipes)
         screen = pygame.display.get_surface()
         for pipe in self.pipes:
-            pipe.fly()
-            screen.blit(pipe.img, pipe.pos)
+            if pipe.pos.x <= 0:
+                self.pipes.remove(pipe)
+            else:
+                pipe.fly()
+                screen.blit(pipe.img, pipe.pos)
 
     def getpipes(self):
         return self.pipes

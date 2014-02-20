@@ -59,13 +59,15 @@ def action():
     python = GameObject(pypic, 5, 150, gravity=1)
     pipes = PipesController() 
     screen = pygame.display.get_surface()
+    bg = draw_background()
 
     game.new()
 
     def endGame(message):
         print(message)
         pipes.clear()
-        python.pos.y = 150;
+        python.die()
+
         game.new()
 
     def checkFall():
@@ -80,21 +82,19 @@ def action():
         lHighscore = myfont.render(str(game.highscore), 1, (255, 0, 0))
 
         sleep(0.05)
+        screen.blit(bg, (0, 0))
         game.timer+=1
 
-        draw_background()
         pipes.draw()
         if game.timer%60==0:
             pipes.new(game.holesize)
             game.holesize -= 1
-
 
         python.fly()
 
         eventer(python)
 
         screen.blit(python.img, python.pos)
-        
 
         if pipes.checkCollisions(python):
             pipes.clear()
