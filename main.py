@@ -1,131 +1,95 @@
-import pygame
 from pygame import *
-from time import sleep
 from random import randrange
 from GameObject import *
-from PipesController import *
 
-class GameState:
-    def __init__(self):
-        self.holesize = 50
-        self.timer = 0
-        self.highscore = 0
-    def new(self):
-        if self.timer > self.highscore:
-            self.highscore = self.timer
+SCORE_COLOR = (255, 255, 0)
+HIGHSCORE_COLOR = (255, 0, 0)
+DISPLAY_WIDTH = 320
+DISPLAY_HEIGHT = 480
+FONT = None
+FONT_SIZE = 22
+
+score = 1
+highscore = 0
+
+def save(): 
+    global score, highscore
+    if score > highscore:
+        highscore = score
         try:
             with open('save', 'r+') as f:
                 save = f.read()
-                if self.highscore > int(save):
+                if highscore > int(save):
                     f.seek(0)
                     f.truncate()
-                    f.write(str(self.highscore))
+                    f.write(str(highscore))
                 else:
-                    self.highscore = int(save)
+                    highscore = int(save)
         except:
             print('Save must be corrupted. Set highscore to 0 :(')
             f = open('save', 'w')
             f.write('0')
             f.close()
-
-        self.holesize = 50
-        self.timer = 0
-
-game = GameState()
-
-# Initialize environment
-def init_window():
-    pygame.init()
-    window = display.set_mode((320, 480))
-    display.set_caption('Flappy python')
-
-# Macros for pygame.image.load(name)
-def load_image(name):
-    try:
-        image = pygame.image.load(name).convert_alpha()
-    except pygame.error:
-        print('Cannot load image:', name)
-        raise SystemExit
-    return image
-
-# Draw background :)
-def draw_background():
-    screen = pygame.display.get_surface()
-    background = load_image('background.png')
-    background_rect  = background.get_rect()
-    screen.blit(background, (0, 0))
-    pygame.display.flip()
-    return background
-
-# Handle input and other events
-def eventer(obj):
-    for i in event.get():
-        if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN and i.key != K_ESCAPE:
-            obj.speedY=-10
-            game.grav=0
-        elif i.type == QUIT or (i.type == KEYDOWN and i.key == K_ESCAPE):
-            pygame.quit()
-            raise SystemExit
+    score = 0
 
 # Main game cycle
-def action():
-    myfont = pygame.font.Font("freesansbold.ttf", 15)
-    pypic = load_image('python.png')
-    python = GameObject(pypic, 5, 150, gravity=1)
-    pipes = PipesController() 
-    screen = pygame.display.get_surface()
-    bg = draw_background()
+def main():
+    global score, highscore
+    pygame.init()
+    window = display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    display.set_caption('Flappy bird')
+    myfont = font.Font(FONT, FONT_SIZE)
+    screen = display.get_surface()
+    bird = GameObject(image.load('bird.png').convert_alpha(), 5, 150, gravity=1)
+    bg = image.load('background.png').convert_alpha()
+    pipes = []
 
-    game.new()
+    save()
 
-    def endGame(message):
-        print(message)
-        pipes.clear()
-        python.die()
-        game.new()
+    running = True
+    while running:
+        lScore     = myfont.render(str(score),     True, SCORE_COLOR)
+        lHighscore = myfont.render(str(highscore), True, HIGHSCORE_COLOR)
 
-    def checkFall():
-        pheight = python.img.get_height()
-        if python.pos.y >= 480 - pheight*1.5:
-            endGame('Fail!')
-        elif python.pos.y <= pheight/2:
-            python.pos.y = pheight/2;
-            python.speedY = 1
-
-    while True:
-        lScore = myfont.render(str(game.timer), 1, (255,255,0))
-        lHighscore = myfont.render(str(game.highscore), 1, (255, 0, 0))
-
-        sleep(0.05)
+        time.Clock().tick(30)
         screen.blit(bg, (0, 0))
-        game.timer+=1
+        score+=1
 
-        pipes.draw()
-        if game.timer%60==0:
-            pipes.new(game.holesize)
-            game.holesize -= 1
+        for pipe in pipes:
+            if pipe.pos.x <= -pipe.img.get_width():
+                pipes.remove(pipe)
+            else:
+                pipe.fly()
+                screen.blit(pipe.img, pipe.pos)
 
-        python.fly()
+        if score%60==0:
+            hole = randrange(0, 480) 
+            pipepic = image.load('pipe.png').convert_alpha()
+            pipes.append(GameObject(pipepic, 240, hole+50, -5, 0))
+            pipes.append(GameObject(pipepic, 240, -480+hole-50, -5, 0))
 
-        eventer(python)
+        bird.fly()
 
-        screen.blit(python.img, python.pos)
+        for i in event.get():
+            if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN and i.key != K_ESCAPE:
+                bird.speedY=-10
+            elif i.type == QUIT or (i.type == KEYDOWN and i.key == K_ESCAPE):
+                running = False
 
-        if pipes.checkCollisions(python):
+        screen.blit(bird.img, bird.pos)
+
+        pheight = bird.img.get_height()
+        if bird.pos.y >= 480 - pheight*1.5 or bird.checkCollisions(pipes):
+            bird.die()
             pipes.clear()
-            endGame('Collision')
-
-        checkFall()
+            save()
+        elif bird.pos.y <= pheight/2:
+            bird.pos.y = pheight/2;
+            bird.speedY = 1
 
         screen.blit(lScore, (100, 100))
         screen.blit(lHighscore, (100, 120))
 
         display.flip()
-
-# Self-descriptive
-def main():
-    init_window()
-    draw_background()
-    action()
 
 if __name__ == '__main__': main()

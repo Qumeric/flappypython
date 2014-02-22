@@ -19,3 +19,8 @@ class GameObject(pygame.sprite.Sprite):
         self.pos.x = self.oldX
         self.pos.y = self.oldY
         self.speedX = self.speedY = 0
+    def checkCollisions(self, pipes):
+        for pipe in pipes:
+            if self.pos.colliderect(pipe.pos):
+                return True
+        return False
