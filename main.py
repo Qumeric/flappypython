@@ -34,6 +34,11 @@ def save():
             else:
                 highscore = int(save)
     score = 0
+def pause():
+    while True:
+        for i in event.get():
+            if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
+                    return
 
 def main():
     global score, highscore
@@ -49,6 +54,7 @@ def main():
     save()
 
     running = True
+    
     while running:
         lScore     = myfont.render(str(score),     True, SCORE_COLOR)
         lHighscore = myfont.render(str(highscore), True, HIGHSCORE_COLOR)
@@ -88,8 +94,10 @@ def main():
             bird.die()
             pipes.clear()
             save()
+            pause()
         elif bird.rect.y < TOP: # The bird is too high
             bird.speedY = 1
+            
 
         # Draw the bird and score info
         screen.blit(bird.img, bird.rect)
