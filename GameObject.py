@@ -1,26 +1,36 @@
-import pygame
+from pygame import image
 
-class GameObject(pygame.sprite.Sprite):
-    def __init__(self, img, x, y, speedX=0, speedY=0, gravity=0, maxspeed=15):
-        pygame.sprite.Sprite.__init__(self)
-        self.img = img
-        self.oldX = x
+MAX_SPEED = 15
+
+class Bird():
+    def __init__(self, y, gravity):
+        self.img = image.load('bird.png').convert_alpha()
+        self.speedY = 0 
+        self.rect = self.img.get_rect().move(0, y)
         self.oldY = y
-        self.speedX = speedX
-        self.speedY = speedY
-        self.pos = img.get_rect().move(x, y)
         self.gravity = gravity
-        self.maxspeed = maxspeed
+
     def fly(self):
-        self.pos = self.pos.move(self.speedX, self.speedY)
-        if not self.speedY > self.maxspeed:
+        self.rect = self.rect.move(0, self.speedY)
+        if not abs(self.speedY) > MAX_SPEED:
             self.speedY+=self.gravity
+
     def die(self):
-        self.pos.x = self.oldX
-        self.pos.y = self.oldY
-        self.speedX = self.speedY = 0
+        self.rect.y = self.oldY
+        self.speedY = 0
+
     def checkCollisions(self, pipes):
         for pipe in pipes:
-            if self.pos.colliderect(pipe.pos):
+            if self.rect.colliderect(pipe.rect):
                 return True
         return False
+
+class Pipe():
+    def __init__(self, x, y):
+        self.img = image.load('pipe.png').convert_alpha()
+        self.rect = self.img.get_rect().move(x, y)
+        self.lifetime = 0
+
+    def fly(self):
+        self.rect = self.rect.move(-5, 0)
+        self.lifetime += 1
