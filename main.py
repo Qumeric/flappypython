@@ -3,7 +3,7 @@ from random import randrange
 from GameObject import *
 
 SCORE_COLOR = (255, 255, 0)
-HIGHSCORE_COLOR = (255, 0, 0)
+HIGHSCORE_COLOR = (255, 165, 0)
 
 DISPLAY_WIDTH = 320
 DISPLAY_HEIGHT = 480
@@ -34,7 +34,17 @@ def save():
             else:
                 highscore = int(save)
     score = 0
-def pause():
+
+def pause(display):
+    screen = display.get_surface()
+
+    hsfont = font.Font(FONT, 100)
+    hs = hsfont.render(str(highscore), True, HIGHSCORE_COLOR)
+
+    screen.blit(image.load('pause.png').convert_alpha(), (0, 0))
+    screen.blit(hs, (75, 110))
+    display.flip()
+
     while True:
         for i in event.get():
             if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
@@ -57,7 +67,6 @@ def main():
     
     while running:
         lScore     = myfont.render(str(score),     True, SCORE_COLOR)
-        lHighscore = myfont.render(str(highscore), True, HIGHSCORE_COLOR)
 
         time.Clock().tick(30)
         screen.blit(bg, (0, 0))
@@ -94,7 +103,7 @@ def main():
             bird.die()
             pipes.clear()
             save()
-            pause()
+            pause(display)
         elif bird.rect.y < TOP: # The bird is too high
             bird.speedY = 1
             
@@ -102,7 +111,6 @@ def main():
         # Draw the bird and score info
         screen.blit(bird.img, bird.rect)
         screen.blit(lScore, (0, 0))
-        screen.blit(lHighscore, (0, FONT_SIZE))
 
         display.flip()
 
