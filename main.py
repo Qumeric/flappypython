@@ -42,7 +42,7 @@ def pause(display):
     hs = hsfont.render(str(highscore), True, HIGHSCORE_COLOR)
 
     screen.blit(image.load('pause.png').convert_alpha(), (0, 0))
-    screen.blit(hs, (75, 110))
+    screen.blit(hs, (77, 110))
     display.flip()
 
     while True:
@@ -98,6 +98,8 @@ def main():
             elif i.type == QUIT:
                 running = False
 
+        screen.blit(lScore, (0, 0))
+
         # Check collisions with pipes and bottom
         if bird.rect.y >= DISPLAY_HEIGHT - bird.img.get_height()or bird.checkCollisions(pipes): # The bird is too low or touches a pipe
             bird.die()
@@ -106,11 +108,9 @@ def main():
             pause(display)
         elif bird.rect.y < TOP: # The bird is too high
             bird.speedY = 1
-            
 
         # Draw the bird and score info
         screen.blit(bird.img, bird.rect)
-        screen.blit(lScore, (0, 0))
 
         display.flip()
 
