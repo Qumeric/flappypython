@@ -1,6 +1,7 @@
-from pygame import *
+from pygame import display, font, image, init, time, event
+from pygame.locals import *
 from random import randrange
-from GameObject import *
+from GameObject import Bird, Pipe
 
 SCORE_COLOR = (255, 255, 0)
 HIGHSCORE_COLOR = (255, 165, 0)
@@ -15,12 +16,11 @@ HOLE_SIZE = 50
 PIPE_FREQUENCY = 50
 PIPE_MAXLIFETIME = 100
 
-TOP = -50
-
 score = 1
 highscore = 0
 
-def save(): 
+
+def save():
     global score, highscore
     if score > highscore:
         highscore = score
@@ -34,6 +34,7 @@ def save():
             else:
                 highscore = int(save)
     score = 0
+
 
 def pause(display):
     screen = display.get_surface()
@@ -50,10 +51,11 @@ def pause(display):
             if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
                     return
 
+
 def main():
     global score, highscore
     init()
-    window = display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     display.set_caption('Flappy bird')
     myfont = font.Font(FONT, FONT_SIZE)
     screen = display.get_surface()
@@ -64,20 +66,20 @@ def main():
     save()
 
     running = True
-    
-    while running:
-        lScore     = myfont.render(str(score),     True, SCORE_COLOR)
 
-        time.Clock().tick(30)
+    while running:
+        lScore = myfont.render(str(score), True, SCORE_COLOR)
+
+        time.Clock().tick(30)  # Set FPS to 30
         screen.blit(bg, (0, 0))
-        score+=1
-        
+        score += 1
+
         # Create new pipes
-        if score%PIPE_FREQUENCY==0:
-            hole = randrange(HOLE_SIZE, DISPLAY_HEIGHT-HOLE_SIZE) 
-            pipepic = image.load('pipe.png').convert_alpha()
-            pipes.append(Pipe(DISPLAY_WIDTH, hole+HOLE_SIZE))
-            pipes.append(Pipe(DISPLAY_WIDTH, -DISPLAY_HEIGHT+hole-HOLE_SIZE))
+        if score % PIPE_FREQUENCY == 0:
+            hole = randrange(HOLE_SIZE, DISPLAY_HEIGHT - HOLE_SIZE)
+            pipe1 = Pipe(DISPLAY_WIDTH, hole + HOLE_SIZE)
+            pipe2 = Pipe(DISPLAY_WIDTH, -DISPLAY_HEIGHT + hole - HOLE_SIZE)
+            pipes.extend((pipe1, pipe2))
 
         # Move pipes
         for pipe in pipes:
@@ -89,29 +91,32 @@ def main():
             if pipe.lifetime > PIPE_MAXLIFETIME:
                 pipes.remove(pipe)
 
+        # Move the bird on the y-axis
         bird.fly()
 
         # Handle the input
         for i in event.get():
             if i.type == MOUSEBUTTONDOWN or i.type == KEYDOWN:
-                bird.speedY=-10
+                bird.speedY = -10
             elif i.type == QUIT:
                 running = False
 
-        screen.blit(lScore, (0, 0))
-
         # Check collisions with pipes and bottom
-        if bird.rect.y >= DISPLAY_HEIGHT - bird.img.get_height()or bird.checkCollisions(pipes): # The bird is too low or touches a pipe
+        # If the bird is too low or touches a pipe
+        if bird.rect.y >= DISPLAY_HEIGHT - bird.img.get_height() or \
+                bird.checkCollisions(pipes):
             bird.die()
             pipes.clear()
             save()
             pause(display)
-        elif bird.rect.y < TOP: # The bird is too high
+        elif bird.rect.y < -HOLE_SIZE:  # The bird is too high
             bird.speedY = 1
 
         # Draw the bird and score info
         screen.blit(bird.img, bird.rect)
+        screen.blit(lScore, (0, 0))
 
         display.flip()
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()
